@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom Sleek Gaming Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #060c09;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #059669 0%, #047857 50%, #ea580c 100%);
+  border-radius: 9999px;
+  border: 2px solid #060c09;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #10b981 0%, #059669 50%, #f97316 100%);
+}
+
+/* Firefox scrollbar support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #059669 #060c09;
+}
