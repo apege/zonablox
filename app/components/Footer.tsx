@@ -1,8 +1,33 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MessageCircle, ShieldCheck, Heart } from "lucide-react";
 
 export default function Footer() {
+  const [storeName, setStoreName] = useState("ZonaBlox Malaysia");
+  const [storeLogo, setStoreLogo] = useState("/logo.jpg");
+  const [whatsappPhone, setWhatsappPhone] = useState("60123456789");
+
+  useEffect(() => {
+    fetch(`/api/store-settings?_t=${Date.now()}`, { cache: "no-store" })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          if (json.data.store_name) setStoreName(json.data.store_name);
+          if (json.data.store_logo) setStoreLogo(json.data.store_logo);
+          if (json.data.whatsapp_cs) {
+            setWhatsappPhone(json.data.whatsapp_cs.replace(/\D/g, ""));
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const nameParts = storeName.trim().split(" ");
+  const firstWord = nameParts[0] || "ZonaBlox";
+  const restWords = nameParts.slice(1).join(" ");
+
   return (
     <footer className="relative bg-[#060c09] border-t border-emerald-900/30 pt-16 pb-12 overflow-hidden text-zinc-400 text-xs sm:text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,24 +36,23 @@ export default function Footer() {
           <div className="md:col-span-2 space-y-4">
             <Link href="/" className="flex items-center gap-3 group select-none w-fit">
               <div className="relative w-10 h-10 rounded-xl overflow-hidden shadow-[0_0_15px_rgba(234,88,12,0.3)] border border-emerald-500/30">
-                <Image
-                  src="/logo.jpg"
-                  alt="ZonaBlox"
-                  fill
-                  className="object-cover"
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={storeLogo}
+                  alt={storeName}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                 />
               </div>
               <div className="flex flex-col">
                 <span className="text-xl font-black tracking-tight leading-none italic uppercase">
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-400 to-orange-400">
-                    ZONA
+                    {firstWord}
                   </span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
-                    BLOX
-                  </span>
-                  <span className="text-orange-500 text-base not-italic font-bold ml-0.5">
-                    .id
-                  </span>
+                  {restWords ? (
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300 ml-1.5 not-italic">
+                      {restWords}
+                    </span>
+                  ) : null}
                 </span>
                 <span className="text-[10px] text-zinc-400 font-semibold tracking-widest uppercase">
                   Robux Store
@@ -36,7 +60,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-md">
-              ZonaBlox.id is the premier, #1 trusted Roblox Robux distributor serving players across Malaysia. Faster delivery, wholesale regional rates, and guaranteed safe transactions without sharing your password.
+              {storeName} is the premier, #1 trusted Roblox Robux distributor serving players across Malaysia. Faster delivery, wholesale regional rates, and guaranteed safe transactions without sharing your password.
             </p>
             <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold">
               <ShieldCheck className="w-4 h-4" />
@@ -87,10 +111,10 @@ export default function Footer() {
               Need assistance with an ongoing transaction or bulk inquiry? Reach our Malaysian support desk anytime.
             </p>
             <a
-              href="https://wa.me/?text=Hi%20ZonaBlox%2C%20I%20have%20an%20inquiry%20regarding%20Robux%20Malaysia"
+              href={`https://wa.me/${whatsappPhone}?text=Hi%20${encodeURIComponent(storeName)}%2C%20I%20have%20an%20inquiry%20regarding%20Robux%20Malaysia`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold text-xs transition-all w-fit"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold text-xs transition-all w-fit cursor-pointer"
             >
               <MessageCircle className="w-4 h-4 text-emerald-400" />
               <span>WhatsApp CS (24/7)</span>
@@ -101,7 +125,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-emerald-950 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
           <p>
-            &copy; 2026 ZonaBlox.id. All rights reserved. Zona Malaysia Roblox Community.
+            &copy; 2026 {storeName}. All rights reserved. Zona Malaysia Roblox Community.
           </p>
           <p className="flex items-center gap-1">
             Made with <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> for Robloxian Malaysia.
