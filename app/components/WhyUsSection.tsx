@@ -18,7 +18,7 @@ export default function WhyUsSection() {
               <span>Malaysia Region Special Pricing</span>
             </div>
 
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
               Why Is Robux at{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">
                 ZonaBlox
@@ -77,34 +77,34 @@ export default function WhyUsSection() {
           {/* Right Column: Statistics & Visual Card */}
           <div className="lg:col-span-5 space-y-4">
             {/* Top Stat Card: 10K+ Orders & Rating */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-6 rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 shadow-xl text-center">
-                <div className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 shadow-xl text-center">
+                <div className="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-300">
                   10,000+
                 </div>
-                <div className="text-xs font-semibold text-zinc-300 mt-1">
+                <div className="text-[11px] sm:text-xs font-semibold text-zinc-300 mt-1">
                   Orders Completed
                 </div>
-                <div className="text-[11px] text-emerald-400 mt-0.5">
+                <div className="text-[10px] sm:text-[11px] text-emerald-400 mt-0.5">
                   Across Malaysia
                 </div>
               </div>
 
-              <div className="p-6 rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 shadow-xl text-center">
-                <div className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
+              <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 shadow-xl text-center">
+                <div className="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
                   4.95 / 5.0
                 </div>
-                <div className="text-xs font-semibold text-zinc-300 mt-1">
+                <div className="text-[11px] sm:text-xs font-semibold text-zinc-300 mt-1">
                   Customer Rating
                 </div>
-                <div className="text-[11px] text-amber-400 mt-0.5">
+                <div className="text-[10px] sm:text-[11px] text-amber-400 mt-0.5">
                   ⭐⭐⭐⭐⭐ Verified
                 </div>
               </div>
             </div>
 
             {/* Bottom Stat Card: 24/7 Fast Support */}
-            <div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0c1611] to-[#060c09] border border-orange-500/30 shadow-2xl relative overflow-hidden">
+            <div className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0c1611] to-[#060c09] border border-orange-500/30 shadow-2xl relative overflow-hidden">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-xs font-bold text-orange-400 uppercase tracking-wider px-2.5 py-1 rounded-full bg-orange-950/60 border border-orange-500/30">
                   Fast Support Guarantee
