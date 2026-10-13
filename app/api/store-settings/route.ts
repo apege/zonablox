@@ -26,18 +26,27 @@ export async function GET(request: Request) {
       store_logo: "/logo.jpg",
     };
 
-    return NextResponse.json(
-      { success: true, data: settings || fallback },
-      {
-        headers: {
+    const { searchParams } = new URL(request.url);
+    const isAdmin = searchParams.get("admin") === "true";
+
+    const headers: Record<string, string> = isAdmin
+      ? {
           "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
           "Pragma": "no-cache",
           "Expires": "0",
           "Surrogate-Control": "no-store",
           "CDN-Cache-Control": "no-store",
           "Cloudflare-CDN-Cache-Control": "no-store",
-        },
-      }
+        }
+      : {
+          "Cache-Control": "public, max-age=10, s-maxage=30, stale-while-revalidate=60",
+          "CDN-Cache-Control": "public, max-age=30",
+          "Cloudflare-CDN-Cache-Control": "public, max-age=30",
+        };
+
+    return NextResponse.json(
+      { success: true, data: settings || fallback },
+      { headers }
     );
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : String(error);

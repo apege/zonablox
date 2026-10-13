@@ -8,6 +8,7 @@ import {
   RobuxPackage,
   PAYMENT_METHODS,
 } from "../data/robuxData";
+import { getStoreSettings, StoreSettingsData } from "@/lib/clientStoreSettings";
 import {
   User,
   Check,
@@ -49,21 +50,15 @@ export default function TopUpSection() {
   const [filterTab, setFilterTab] = useState<"all" | "bestseller" | "vip">("all");
   const [showAllPackages, setShowAllPackages] = useState(false);
 
-  const [storeSettings, setStoreSettings] = useState<{
-    whatsapp_cs?: string;
-    whatsapp_service_active?: boolean;
-    qris_nmid?: string;
-    qris_image?: string;
-    store_name?: string;
-  } | null>(null);
+  const [storeSettings, setStoreSettings] = useState<StoreSettingsData | null>(null);
 
   // Fetch active products and store settings from Neon API on mount
   useEffect(() => {
     async function loadData() {
       try {
-        const [prodRes, settingsRes] = await Promise.allSettled([
+        const [prodRes, settingsData] = await Promise.allSettled([
           fetch("/api/products?active_only=true"),
-          fetch(`/api/store-settings?_t=${Date.now()}`, { cache: "no-store" }),
+          getStoreSettings(),
         ]);
 
         if (prodRes.status === "fulfilled") {
@@ -85,11 +80,8 @@ export default function TopUpSection() {
           }
         }
 
-        if (settingsRes.status === "fulfilled") {
-          const sJson = await settingsRes.value.json();
-          if (sJson.success && sJson.data) {
-            setStoreSettings(sJson.data);
-          }
+        if (settingsData.status === "fulfilled" && settingsData.value) {
+          setStoreSettings(settingsData.value);
         }
       } catch {
         // network or server offline

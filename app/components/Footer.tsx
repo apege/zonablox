@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { MessageCircle, ShieldCheck, Heart } from "lucide-react";
+import { getStoreSettings } from "@/lib/clientStoreSettings";
 
 export default function Footer() {
   const [storeName, setStoreName] = useState("ZonaBlox Malaysia");
@@ -10,18 +11,15 @@ export default function Footer() {
   const [whatsappPhone, setWhatsappPhone] = useState("60123456789");
 
   useEffect(() => {
-    fetch(`/api/store-settings?_t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success && json.data) {
-          if (json.data.store_name) setStoreName(json.data.store_name);
-          if (json.data.store_logo) setStoreLogo(json.data.store_logo);
-          if (json.data.whatsapp_cs) {
-            setWhatsappPhone(json.data.whatsapp_cs.replace(/\D/g, ""));
-          }
+    getStoreSettings().then((data) => {
+      if (data) {
+        if (data.store_name) setStoreName(data.store_name);
+        if (data.store_logo) setStoreLogo(data.store_logo);
+        if (data.whatsapp_cs) {
+          setWhatsappPhone(data.whatsapp_cs.replace(/\D/g, ""));
         }
-      })
-      .catch(() => {});
+      }
+    });
   }, []);
 
   const nameParts = storeName.trim().split(" ");

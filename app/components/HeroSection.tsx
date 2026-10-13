@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Zap, ShieldCheck, Users, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { getStoreSettings, StoreSettingsData } from "@/lib/clientStoreSettings";
 
 const FEATURES = [
   {
@@ -37,24 +38,14 @@ const FEATURES = [
 ];
 
 export default function HeroSection() {
-  const [storeSettings, setStoreSettings] = useState<{
-    promo_active?: boolean;
-    promo_package?: string;
-    promo_headline?: string;
-    promo_description?: string;
-    promo_end_date?: string;
-    store_name?: string;
-  } | null>(null);
+  const [storeSettings, setStoreSettings] = useState<StoreSettingsData | null>(null);
 
   useEffect(() => {
-    fetch(`/api/store-settings?_t=${Date.now()}`, { cache: "no-store" })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success && json.data) {
-          setStoreSettings(json.data);
-        }
-      })
-      .catch(() => {});
+    getStoreSettings().then((data) => {
+      if (data) {
+        setStoreSettings(data);
+      }
+    });
   }, []);
   return (
     <section className="relative overflow-hidden pt-6 pb-16 md:pt-10 md:pb-24">

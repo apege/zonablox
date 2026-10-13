@@ -24,6 +24,8 @@ import {
   RotateCcw,
 } from "lucide-react";
 
+import { invalidateClientStoreSettings } from "@/lib/clientStoreSettings";
+
 interface StoreSettingsViewProps {
   onToast?: (title: string, desc: string, type?: "success" | "info" | "warning") => void;
   onOpenReceiptModal?: (imageUrl: string, orderId: string) => void;
@@ -108,7 +110,7 @@ export default function StoreSettingsView({
         .catch(() => {});
 
       try {
-        const res = await fetch("/api/store-settings");
+        const res = await fetch("/api/store-settings?admin=true&_t=" + Date.now(), { cache: "no-store" });
         const json = await res.json();
         if (json.success && json.data) {
           const d = json.data;
@@ -170,6 +172,7 @@ export default function StoreSettingsView({
 
     try {
       localStorage.setItem("zonablox_store_settings", JSON.stringify(payload));
+      invalidateClientStoreSettings();
       await fetch("/api/store-settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
