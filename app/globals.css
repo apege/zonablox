@@ -19,10 +19,16 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 /* Custom Sleek Gaming Scrollbar */
@@ -49,4 +55,26 @@ body {
 * {
   scrollbar-width: thin;
   scrollbar-color: #059669 #060c09;
+}
+
+/* Continuous Infinite Marquee Slider */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 15s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover,
+.animate-marquee:active {
+  animation-play-state: paused;
 }
