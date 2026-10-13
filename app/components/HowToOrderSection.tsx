@@ -37,7 +37,7 @@ export default function HowToOrderSection() {
         {/* 3 Step Cards Layout (similar to VietBlox layout structure, but customized) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {/* Card 1 */}
-          <div className="relative rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 p-6 sm:p-8 flex flex-col justify-between hover:border-emerald-400/50 transition-all group shadow-xl">
+          <div className="relative rounded-2xl sm:rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 p-5 sm:p-8 flex flex-col justify-between hover:border-emerald-400/50 transition-all group shadow-xl">
             <div>
               {/* Step indicator */}
               <div className="flex items-center justify-between mb-6">
@@ -78,7 +78,7 @@ export default function HowToOrderSection() {
           </div>
 
           {/* Card 2 */}
-          <div className="relative rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 p-6 sm:p-8 flex flex-col justify-between hover:border-emerald-400/50 transition-all group shadow-xl">
+          <div className="relative rounded-2xl sm:rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 p-5 sm:p-8 flex flex-col justify-between hover:border-emerald-400/50 transition-all group shadow-xl">
             <div>
               {/* Step indicator */}
               <div className="flex items-center justify-between mb-6">
@@ -115,7 +115,7 @@ export default function HowToOrderSection() {
           </div>
 
           {/* Card 3 */}
-          <div className="relative rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 p-6 sm:p-8 flex flex-col justify-between hover:border-emerald-400/50 transition-all group shadow-xl">
+          <div className="relative rounded-2xl sm:rounded-3xl bg-[#0b1410]/90 border border-emerald-500/25 p-5 sm:p-8 flex flex-col justify-between hover:border-emerald-400/50 transition-all group shadow-xl">
             <div>
               {/* Step indicator */}
               <div className="flex items-center justify-between mb-6">
