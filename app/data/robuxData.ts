@@ -36,113 +36,8 @@ export interface FaqItem {
   answer: string;
 }
 
-export const ROBUX_PACKAGES: RobuxPackage[] = [
-  // Best Seller Tier (from official ZonaBlox pricelist)
-  {
-    id: "pkg-1800",
-    amount: 1800,
-    priceMYR: 8,
-    popular: true,
-    bestSeller: true,
-    badge: "Most Popular 🔥",
-    stock: "in_stock",
-    category: "bestseller",
-  },
-  {
-    id: "pkg-2200",
-    amount: 2200,
-    priceMYR: 10,
-    bestSeller: true,
-    stock: "in_stock",
-    category: "bestseller",
-  },
-  {
-    id: "pkg-2700",
-    amount: 2700,
-    priceMYR: 12,
-    bestSeller: true,
-    badge: "Hot Deal ✨",
-    stock: "in_stock",
-    category: "bestseller",
-  },
-  {
-    id: "pkg-3200",
-    amount: 3200,
-    priceMYR: 14,
-    bestSeller: true,
-    stock: "in_stock",
-    category: "bestseller",
-  },
-  {
-    id: "pkg-3700",
-    amount: 3700,
-    priceMYR: 16,
-    bestSeller: true,
-    stock: "in_stock",
-    category: "bestseller",
-  },
-  {
-    id: "pkg-4200",
-    amount: 4200,
-    priceMYR: 18,
-    bestSeller: true,
-    stock: "in_stock",
-    category: "bestseller",
-  },
-
-  // VIP / Whale Tier (High Value Packages)
-  {
-    id: "pkg-4700",
-    amount: 4700,
-    priceMYR: 21,
-    vip: true,
-    badge: "VIP Tier 👑",
-    stock: "in_stock",
-    category: "vip",
-  },
-  {
-    id: "pkg-5500",
-    amount: 5500,
-    priceMYR: 23,
-    vip: true,
-    stock: "in_stock",
-    category: "vip",
-  },
-  {
-    id: "pkg-10500",
-    amount: 10500,
-    priceMYR: 46,
-    vip: true,
-    badge: "Super Saver 💎",
-    stock: "in_stock",
-    category: "vip",
-  },
-  {
-    id: "pkg-15500",
-    amount: 15500,
-    priceMYR: 69,
-    vip: true,
-    stock: "in_stock",
-    category: "vip",
-  },
-  {
-    id: "pkg-20500",
-    amount: 20500,
-    priceMYR: 92,
-    vip: true,
-    stock: "in_stock",
-    category: "vip",
-  },
-  {
-    id: "pkg-30500",
-    amount: 30500,
-    priceMYR: 116,
-    vip: true,
-    badge: "Ultimate Pack 🚀",
-    stock: "in_stock",
-    category: "vip",
-  },
-];
+// Packages are fetched dynamically from Neon database via /api/products
+export const ROBUX_PACKAGES: RobuxPackage[] = [];
 
 export interface PaymentMethodChannel {
   id: "website" | "whatsapp";
@@ -173,52 +68,8 @@ export const PAYMENT_METHODS: PaymentMethodChannel[] = [
   },
 ];
 
-export const TESTIMONIALS: Testimonial[] = [
-  {
-    id: "testi-1",
-    username: "Farhan Gaming",
-    handle: "@farhan_bloxx",
-    rating: 5,
-    avatar: "/logo.jpg",
-    comment: "First time buying Robux here and it took only 3 minutes to arrive! The rates for Malaysia are seriously unbeatable compared to standard prices.",
-    adminReply: "Thank you for trusting ZonaBlox! Enjoy your game bro! 🔥",
-    robuxAmount: 4200,
-    timeAgo: "15 minutes ago",
-  },
-  {
-    id: "testi-2",
-    username: "Aisyah N.",
-    handle: "@aisyah_rbx",
-    rating: 5,
-    avatar: "/logo.jpg",
-    comment: "Top up 10,500 Robux VIP pack smoothly via DuitNow QR. No password needed, only username! Super clean service.",
-    adminReply: "Pleasure serving you! Let us know if you need any rare item top-ups! ✨",
-    robuxAmount: 10500,
-    timeAgo: "1 hour ago",
-  },
-  {
-    id: "testi-3",
-    username: "Danish Haikal",
-    handle: "@danish_speed",
-    rating: 5,
-    avatar: "/logo.jpg",
-    comment: "Admin responded in seconds on WhatsApp when I had a question. The 1,800 Robux package for RM8 is absolute value.",
-    adminReply: "Our 24/7 team is always ready for Malaysian Robloxian! Enjoy! ⚡",
-    robuxAmount: 1800,
-    timeAgo: "3 hours ago",
-  },
-  {
-    id: "testi-4",
-    username: "Kevin Tan",
-    handle: "@kevin_kl",
-    rating: 5,
-    avatar: "/logo.jpg",
-    comment: "Repeat order 30,500 Robux package! Everything clean, legal, and guaranteed safe. ZonaBlox is my go-to store in KL.",
-    adminReply: "Solid loyalty! We've granted you VIP priority processing for your next orders! 👑",
-    robuxAmount: 30500,
-    timeAgo: "6 hours ago",
-  },
-];
+// Testimonials are fetched dynamically from Neon database via /api/testimonials
+export const TESTIMONIALS: Testimonial[] = [];
 
 export const FAQS: FaqItem[] = [
   {
