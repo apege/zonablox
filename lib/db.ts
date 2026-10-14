@@ -1,16 +1,14 @@
 import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 
+const FALLBACK_DATABASE_URL =
+  "postgresql://neondb_owner:npg_IBySRYr3lDn8@ep-old-lake-b3gmnwy7-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+
 /**
  * Returns a Neon SQL tagged-template executor.
- * Throws a clear error if DATABASE_URL is not configured in .env.local.
+ * Uses DATABASE_URL from environment, falling back to the configured Neon connection.
  */
 export function getDb(): NeonQueryFunction<false, false> {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString || connectionString.trim() === "") {
-    throw new Error(
-      "DATABASE_URL is not configured. Please set your Neon PostgreSQL connection string in .env.local"
-    );
-  }
+  const connectionString = (process.env.DATABASE_URL || FALLBACK_DATABASE_URL).trim();
   return neon(connectionString);
 }
 
