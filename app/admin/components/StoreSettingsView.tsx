@@ -44,6 +44,7 @@ export default function StoreSettingsView({
   const [storeName, setStoreName] = useState("ZonaBlox.id");
   const [whatsappCS, setWhatsappCS] = useState("60123456789");
   const [whatsappServiceActive, setWhatsappServiceActive] = useState<boolean>(false);
+  const [telegramCS, setTelegramCS] = useState("@zonabloxmy");
 
   // 2. Promo Banner
   const [promoActive, setPromoActive] = useState(true);
@@ -117,6 +118,7 @@ export default function StoreSettingsView({
           if (d.store_name) setStoreName(d.store_name);
           if (d.whatsapp_cs) setWhatsappCS(d.whatsapp_cs);
           if (d.whatsapp_service_active !== undefined) setWhatsappServiceActive(Boolean(d.whatsapp_service_active));
+          if (d.telegram_cs) setTelegramCS(d.telegram_cs);
           if (d.promo_active !== undefined) setPromoActive(Boolean(d.promo_active));
           if (d.promo_package) setPromoPackage(d.promo_package);
           if (d.promo_headline) setPromoHeadline(d.promo_headline);
@@ -138,6 +140,7 @@ export default function StoreSettingsView({
           if (parsed.storeName) setStoreName(parsed.storeName);
           if (parsed.whatsappCS) setWhatsappCS(parsed.whatsappCS);
           if (parsed.whatsapp_service_active !== undefined) setWhatsappServiceActive(Boolean(parsed.whatsapp_service_active));
+          if (parsed.telegramCS) setTelegramCS(parsed.telegramCS);
           if (parsed.promoActive !== undefined) setPromoActive(parsed.promoActive);
           if (parsed.promoPackage) setPromoPackage(parsed.promoPackage);
           if (parsed.promoHeadline) setPromoHeadline(parsed.promoHeadline);
@@ -160,6 +163,7 @@ export default function StoreSettingsView({
       store_name: override?.store_name !== undefined ? override.store_name : storeName,
       whatsapp_cs: override?.whatsapp_cs !== undefined ? override.whatsapp_cs : whatsappCS,
       whatsapp_service_active: override?.whatsapp_service_active !== undefined ? override.whatsapp_service_active : whatsappServiceActive,
+      telegram_cs: override?.telegram_cs !== undefined ? override.telegram_cs : telegramCS,
       promo_active: override?.promo_active !== undefined ? override.promo_active : promoActive,
       promo_package: override?.promo_package !== undefined ? override.promo_package : promoPackage,
       promo_headline: override?.promo_headline !== undefined ? override.promo_headline : promoHeadline,
@@ -203,9 +207,10 @@ export default function StoreSettingsView({
       store_name: storeName,
       whatsapp_cs: whatsappCS,
       whatsapp_service_active: whatsappServiceActive,
+      telegram_cs: telegramCS,
     });
     if (onToast) {
-      onToast("Identity Saved", "Store identity and WhatsApp service status updated.", "success");
+      onToast("Identity Saved", "Store identity, WhatsApp, and Telegram CS contacts updated.", "success");
     }
   };
 
@@ -310,14 +315,36 @@ export default function StoreSettingsView({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="hidden md:inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-[#070e0b] border border-emerald-950 text-zinc-300">
-              <span>{storeName} • WA: +{whatsappCS}</span>
-              <span className={`w-2 h-2 rounded-full ${whatsappServiceActive ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-zinc-600"}`} />
-              <span className={whatsappServiceActive ? "text-emerald-400" : "text-zinc-500"}>
-                {whatsappServiceActive ? "WA Online" : "WA Offline"}
-              </span>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Store Name Badge */}
+            <span className="hidden lg:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#070e0b] border border-emerald-950 text-zinc-300 whitespace-nowrap">
+              {storeName}
             </span>
+
+            {/* Telegram CS Badge */}
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-950/40 border border-sky-500/30 text-sky-400 whitespace-nowrap">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />
+              <span className="font-mono">{telegramCS || "@zonabloxmy"}</span>
+            </span>
+
+            {/* WhatsApp Status Badge */}
+            <span
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${
+                whatsappServiceActive
+                  ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-400"
+                  : "bg-zinc-900/60 border-zinc-800 text-zinc-500"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                  whatsappServiceActive
+                    ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
+                    : "bg-zinc-600"
+                }`}
+              />
+              <span>{whatsappServiceActive ? "WA Online" : "WA Offline"}</span>
+            </span>
+
             <div className="p-1 rounded-xl text-zinc-400 hover:text-white">
               {sectionIdentityOpen ? (
                 <ChevronUp className="w-5 h-5" />
@@ -331,7 +358,7 @@ export default function StoreSettingsView({
         {/* Section Body */}
         {sectionIdentityOpen && (
           <div className="p-5 sm:p-6 pt-0 border-t border-emerald-950/70 space-y-5 animate-in fade-in duration-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-5">
               {/* Field 1: Store Name */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-300">
@@ -345,11 +372,29 @@ export default function StoreSettingsView({
                   className="w-full bg-[#070e0b] text-sm font-bold text-white placeholder-zinc-500 px-4 py-3 rounded-2xl border border-emerald-900/50 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40 transition shadow-inner"
                 />
                 <p className="text-[11px] text-zinc-500 pt-0.5">
-                  Appears on the top header navigation of the website.
+                  Appears on the top header navigation.
                 </p>
               </div>
 
-              {/* Field 2: WhatsApp Number */}
+              {/* Field 2: Telegram CS Username */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-zinc-300 flex items-center justify-between">
+                  <span>Telegram CS Handle</span>
+                  <span className="text-[10px] text-sky-400 font-semibold uppercase">Active CS</span>
+                </label>
+                <input
+                  type="text"
+                  value={telegramCS}
+                  onChange={(e) => setTelegramCS(e.target.value)}
+                  placeholder="@zonabloxmy"
+                  className="w-full bg-[#070e0b] text-sm font-bold text-white placeholder-zinc-500 px-4 py-3 rounded-2xl border border-sky-900/50 focus:outline-none focus:border-sky-500/60 focus:ring-1 focus:ring-sky-500/40 transition shadow-inner"
+                />
+                <p className="text-[11px] text-zinc-500 pt-0.5">
+                  Primary customer service handle (e.g. @zonabloxmy).
+                </p>
+              </div>
+
+              {/* Field 3: WhatsApp Number */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-zinc-300">
                   WhatsApp Support Phone (Format: 60... / 62...)
@@ -362,7 +407,7 @@ export default function StoreSettingsView({
                   className="w-full bg-[#070e0b] text-sm font-bold text-white placeholder-zinc-500 px-4 py-3 rounded-2xl border border-emerald-900/50 focus:outline-none focus:border-emerald-500/60 focus:ring-1 focus:ring-emerald-500/40 transition shadow-inner"
                 />
                 <p className="text-[11px] text-zinc-500 pt-0.5">
-                  Destination for order confirmations and customer chat support.
+                  Secondary chat support (can be enabled via toggle below).
                 </p>
               </div>
             </div>

@@ -6,6 +6,7 @@ export interface StoreSettingsData {
   store_name?: string;
   whatsapp_cs?: string;
   whatsapp_service_active?: boolean;
+  telegram_cs?: string;
   promo_active?: boolean;
   promo_package?: string;
   promo_headline?: string;

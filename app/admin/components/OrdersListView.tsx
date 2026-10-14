@@ -41,7 +41,7 @@ export default function OrdersListView({
   onOpenReviewModal,
 }: OrdersListViewProps) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedChannel, setSelectedChannel] = useState<"all" | "website" | "whatsapp">("all");
+  const [selectedChannel, setSelectedChannel] = useState<"all" | "website" | "whatsapp" | "telegram">("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Determine current active status filter based on currentTab
@@ -163,7 +163,7 @@ export default function OrdersListView({
             </div>
 
             {/* Channel filter pills */}
-            <div className="grid grid-cols-3 sm:flex items-center gap-1.5 p-1 rounded-2xl bg-[#070e0b] border border-emerald-950/80 w-full sm:w-auto shrink-0">
+            <div className="grid grid-cols-4 sm:flex items-center gap-1.5 p-1 rounded-2xl bg-[#070e0b] border border-emerald-950/80 w-full sm:w-auto shrink-0">
               <button
                 onClick={() => setSelectedChannel("all")}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-center transition ${
@@ -183,6 +183,16 @@ export default function OrdersListView({
                 }`}
               >
                 Website
+              </button>
+              <button
+                onClick={() => setSelectedChannel("telegram")}
+                className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold text-center transition ${
+                  selectedChannel === "telegram"
+                    ? "bg-sky-600 text-white shadow-sm"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Telegram
               </button>
               <button
                 onClick={() => setSelectedChannel("whatsapp")}
@@ -264,7 +274,9 @@ export default function OrdersListView({
                     {/* Channel badge */}
                     <span
                       className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
-                        order.channel === "whatsapp"
+                        order.channel === "telegram"
+                          ? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
+                          : order.channel === "whatsapp"
                           ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                           : "bg-purple-500/20 text-purple-300 border border-purple-500/30"
                       }`}

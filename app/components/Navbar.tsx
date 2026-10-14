@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ShieldCheck, Zap, MessageCircle, Menu, X } from "lucide-react";
+import { ShieldCheck, Zap, MessageCircle, Menu, X, Send } from "lucide-react";
 import { getStoreSettings } from "@/lib/clientStoreSettings";
 
 export default function Navbar() {
@@ -11,6 +11,7 @@ export default function Navbar() {
   const [storeName, setStoreName] = useState("ZonaBlox Malaysia");
   const [storeLogo, setStoreLogo] = useState("/logo.jpg");
   const [whatsappPhone, setWhatsappPhone] = useState("60123456789");
+  const [telegramCS, setTelegramCS] = useState("@zonabloxmy");
 
   useEffect(() => {
     getStoreSettings().then((data) => {
@@ -19,6 +20,9 @@ export default function Navbar() {
         if (data.store_logo) setStoreLogo(data.store_logo);
         if (data.whatsapp_cs) {
           setWhatsappPhone(data.whatsapp_cs.replace(/\D/g, ""));
+        }
+        if (data.telegram_cs) {
+          setTelegramCS(data.telegram_cs);
         }
       }
     });
@@ -96,16 +100,16 @@ export default function Navbar() {
             </Link>
           </nav>
 
-          {/* Actions & WhatsApp Support CTA */}
+          {/* Actions & Customer Support CTA */}
           <div className="hidden md:flex items-center gap-3">
             <a
-              href={`https://wa.me/${whatsappPhone}?text=Hello%20ZonaBlox%2C%20I%20want%20to%20order%20Robux%20Malaysia`}
+              href={`https://t.me/${telegramCS.replace(/^@/, "").replace(/^https?:\/\/t\.me\//, "")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-semibold text-xs uppercase tracking-wider hover:from-emerald-500 hover:to-teal-600 transition-all shadow-[0_0_20px_rgba(5,150,105,0.4)] border border-emerald-400/30 cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 text-white font-semibold text-xs uppercase tracking-wider hover:from-sky-400 hover:to-blue-500 transition-all shadow-[0_0_20px_rgba(14,165,233,0.35)] border border-sky-400/30 cursor-pointer"
             >
-              <MessageCircle className="w-4 h-4" />
-              <span>WhatsApp Admin</span>
+              <Send className="w-4 h-4" />
+              <span>Telegram CS ({telegramCS})</span>
             </a>
           </div>
 
@@ -163,13 +167,13 @@ export default function Navbar() {
 
           <div className="pt-2">
             <a
-              href={`https://wa.me/${whatsappPhone}?text=Hello%20ZonaBlox%2C%20I%20want%20to%20order%20Robux%20Malaysia`}
+              href={`https://t.me/${telegramCS.replace(/^@/, "").replace(/^https?:\/\/t\.me\//, "")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-semibold text-sm hover:from-emerald-500 hover:to-teal-600"
+              className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold text-sm hover:from-sky-400 hover:to-blue-500 shadow-md"
             >
-              <MessageCircle className="w-4 h-4" />
-              <span>WhatsApp Admin (24/7)</span>
+              <Send className="w-4 h-4" />
+              <span>Telegram CS ({telegramCS})</span>
             </a>
           </div>
         </div>

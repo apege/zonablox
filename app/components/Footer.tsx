@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { MessageCircle, ShieldCheck, Heart } from "lucide-react";
+import { MessageCircle, ShieldCheck, Heart, Send } from "lucide-react";
 import { getStoreSettings } from "@/lib/clientStoreSettings";
 
 export default function Footer() {
   const [storeName, setStoreName] = useState("ZonaBlox Malaysia");
   const [storeLogo, setStoreLogo] = useState("/logo.jpg");
   const [whatsappPhone, setWhatsappPhone] = useState("60123456789");
+  const [telegramCS, setTelegramCS] = useState("@zonabloxmy");
 
   useEffect(() => {
     getStoreSettings().then((data) => {
@@ -17,6 +18,9 @@ export default function Footer() {
         if (data.store_logo) setStoreLogo(data.store_logo);
         if (data.whatsapp_cs) {
           setWhatsappPhone(data.whatsapp_cs.replace(/\D/g, ""));
+        }
+        if (data.telegram_cs) {
+          setTelegramCS(data.telegram_cs);
         }
       }
     });
@@ -108,15 +112,27 @@ export default function Footer() {
             <p className="text-xs text-zinc-400">
               Need assistance with an ongoing transaction or bulk inquiry? Reach our Malaysian support desk anytime.
             </p>
-            <a
-              href={`https://wa.me/${whatsappPhone}?text=Hi%20${encodeURIComponent(storeName)}%2C%20I%20have%20an%20inquiry%20regarding%20Robux%20Malaysia`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 font-semibold text-xs transition-all w-fit cursor-pointer"
-            >
-              <MessageCircle className="w-4 h-4 text-emerald-400" />
-              <span>WhatsApp CS (24/7)</span>
-            </a>
+            <div className="flex flex-col gap-2">
+              <a
+                href={`https://t.me/${telegramCS.replace(/^@/, "").replace(/^https?:\/\/t\.me\//, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-semibold text-xs shadow-[0_0_15px_rgba(14,165,233,0.3)] transition-all w-fit cursor-pointer"
+              >
+                <Send className="w-4 h-4" />
+                <span>Telegram CS ({telegramCS})</span>
+              </a>
+
+              <a
+                href={`https://wa.me/${whatsappPhone}?text=Hi%20${encodeURIComponent(storeName)}%2C%20I%20have%20an%20inquiry%20regarding%20Robux%20Malaysia`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 font-medium text-xs transition-all w-fit cursor-pointer"
+              >
+                <MessageCircle className="w-3.5 h-3.5 text-zinc-400" />
+                <span>WhatsApp Desk</span>
+              </a>
+            </div>
           </div>
         </div>
 

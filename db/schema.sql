@@ -57,8 +57,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
   customer_phone text NOT NULL,
   robux integer NOT NULL CHECK (robux > 0),
   price numeric(10,2) NOT NULL CHECK (price >= 0),
-  payment_method text NOT NULL DEFAULT 'Website' CHECK (payment_method IN ('Website', 'WhatsApp', 'DuitNow QR', 'TNG eWallet', 'Bank Transfer')),
-  payment_channel text NOT NULL DEFAULT 'website' CHECK (payment_channel IN ('website', 'whatsapp')),
+  payment_method text NOT NULL DEFAULT 'Website' CHECK (payment_method IN ('Website', 'WhatsApp', 'Telegram', 'DuitNow QR', 'TNG eWallet', 'Bank Transfer')),
+  payment_channel text NOT NULL DEFAULT 'website' CHECK (payment_channel IN ('website', 'whatsapp', 'telegram')),
   submethod text NULL DEFAULT 'DuitNow QR',
   payment_status text NOT NULL DEFAULT 'pending' CHECK (payment_status IN ('pending', 'paid', 'failed')),
   payment_proof_path text NULL,
@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
   qris_image text NULL DEFAULT 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80',
   store_logo text NULL DEFAULT '/logo.jpg',
   whatsapp_service_active boolean NOT NULL DEFAULT false,
+  telegram_cs text NULL DEFAULT '@zonabloxmy',
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 

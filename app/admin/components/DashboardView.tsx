@@ -323,7 +323,9 @@ export default function DashboardView({
                   <div className="mt-0.5">
                     <span
                       className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
-                        order.channel === "whatsapp"
+                        order.channel === "telegram"
+                          ? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
+                          : order.channel === "whatsapp"
                           ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                           : "bg-purple-500/20 text-purple-400 border border-purple-500/30"
                       }`}

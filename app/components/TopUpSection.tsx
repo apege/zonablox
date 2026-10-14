@@ -27,6 +27,7 @@ import {
   CheckCircle2,
   Copy,
   ChevronDown,
+  Send,
 } from "lucide-react";
 
 export default function TopUpSection() {
@@ -43,8 +44,8 @@ export default function TopUpSection() {
   const [checkError, setCheckError] = useState("");
   const [packages, setPackages] = useState<RobuxPackage[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<RobuxPackage | null>(null);
-  // Selected channel: "website" or "whatsapp"
-  const [selectedChannel, setSelectedChannel] = useState<"website" | "whatsapp">("website");
+  // Selected channel: "website", "telegram", or "whatsapp"
+  const [selectedChannel, setSelectedChannel] = useState<"website" | "telegram" | "whatsapp">("website");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [whatsappError, setWhatsappError] = useState("");
   const [filterTab, setFilterTab] = useState<"all" | "bestseller" | "vip">("all");
@@ -97,6 +98,7 @@ export default function TopUpSection() {
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState("");
 
+  const [telegramSuccessModalOpen, setTelegramSuccessModalOpen] = useState(false);
   const [whatsappSuccessModalOpen, setWhatsappSuccessModalOpen] = useState(false);
   const [websiteSuccessModalOpen, setWebsiteSuccessModalOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<{
@@ -109,6 +111,7 @@ export default function TopUpSection() {
     avatarUrl?: string;
   } | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+  const [copiedTelegramTemplate, setCopiedTelegramTemplate] = useState(false);
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   const handleCheckUsername = async () => {
@@ -188,6 +191,26 @@ export default function TopUpSection() {
       setReceiptPreview(null);
       setUploadError("");
       setWebsiteModalOpen(true);
+    } else if (selectedChannel === "telegram") {
+      // Record order into Neon for Telegram checkout
+      fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          roblox_username: username,
+          roblox_user_id: robloxUser?.id ? String(robloxUser.id) : null,
+          roblox_avatar_url: robloxUser?.avatarUrl || null,
+          customer_phone: `+60${cleanPhone}`,
+          robux: selectedPackage?.amount || 0,
+          price: selectedPackage?.priceMYR || 0,
+          payment_method: "Telegram",
+          payment_channel: "telegram",
+          submethod: "Telegram Direct",
+        }),
+      }).catch(() => {});
+
+      window.open(getTelegramOrderUrl(), "_blank");
+      setTelegramSuccessModalOpen(true);
     } else {
       // Record order into Neon for WhatsApp checkout
       fetch("/api/orders", {
@@ -215,6 +238,26 @@ export default function TopUpSection() {
       // Mode via WhatsApp: Tampilkan pop up sukses/status
       setWhatsappSuccessModalOpen(true);
     }
+  };
+
+  const getTelegramOrderMessage = () => {
+    const cleanPhone = whatsappNumber.replace(/\D/g, "");
+    return (
+      `*DIRECT ORDER VIA TELEGRAM - ${storeSettings?.store_name || "ZONABLOX"}*\n\n` +
+        `Hello Admin, I would like to order Robux via Telegram:\n\n` +
+        `• *Roblox Username*: ${username}\n` +
+        `• *Robux Package*: ${selectedPackage?.amount.toLocaleString()} Robux\n` +
+        `• *Total Price*: RM ${selectedPackage?.priceMYR}\n` +
+        `• *Buyer Contact*: +60${cleanPhone}\n\n` +
+        `Please send payment instructions to complete this top-up. Thank you!`
+    );
+  };
+
+  const getTelegramOrderUrl = () => {
+    const rawTg = (storeSettings?.telegram_cs || "@zonabloxmy").trim();
+    const cleanTg = rawTg.replace(/^@/, "").replace(/^https?:\/\/t\.me\//, "");
+    const message = encodeURIComponent(getTelegramOrderMessage());
+    return `https://t.me/${cleanTg}?text=${message}`;
   };
 
   const getWhatsappOrderUrl = () => {
@@ -614,7 +657,7 @@ export default function TopUpSection() {
             )}
           </div>
 
-          {/* Step 3: Payment Method (HANYA 2 METODE: VIA WEBSITE & VIA WHATSAPP) */}
+          {/* Step 3: Payment Method (3 METODE: VIA WEBSITE, VIA TELEGRAM, & VIA WHATSAPP) */}
           <div className="mb-10 pb-8 border-b border-emerald-950/80">
             <div className="flex items-center gap-3 mb-4">
               <span className="w-7 h-7 rounded-full bg-orange-600 text-white font-bold text-xs flex items-center justify-center shadow-[0_0_10px_rgba(234,88,12,0.5)]">
@@ -625,7 +668,7 @@ export default function TopUpSection() {
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Option 1: Via Website */}
               <div
                 onClick={() => setSelectedChannel("website")}
@@ -663,13 +706,66 @@ export default function TopUpSection() {
                     </div>
                   </div>
 
-                  <p className="text-xs text-zinc-300 leading-relaxed">
+                  <p className="text-xs text-zinc-300 leading-relaxed mb-3">
                     Instant automated verification. Transfer directly and attach receipt screenshot.
                   </p>
                 </div>
+
+                <div className="px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-center gap-2 text-emerald-300 text-xs mt-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="font-semibold">Automated QR Verification</span>
+                </div>
               </div>
 
-              {/* Option 2: Via WhatsApp */}
+              {/* Option 2: Via Telegram (Primary Active CS) */}
+              <div
+                onClick={() => setSelectedChannel("telegram")}
+                className={`p-5 rounded-2xl border cursor-pointer transition-all relative flex flex-col justify-between ${
+                  selectedChannel === "telegram"
+                    ? "bg-[#14261d] border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.25)] ring-2 ring-orange-500/50"
+                    : "bg-[#070e0b]/70 border-emerald-900/40 hover:border-emerald-500/40"
+                }`}
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-400 shrink-0">
+                        <Send className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <div className="text-white font-bold text-base flex items-center gap-2">
+                          <span>Via Telegram</span>
+                        </div>
+                        <div className="text-xs text-zinc-400">
+                          Direct chat with CS Admin
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-1 ${
+                        selectedChannel === "telegram"
+                          ? "border-orange-500 bg-orange-500 text-white"
+                          : "border-zinc-600"
+                      }`}
+                    >
+                      {selectedChannel === "telegram" && (
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      )}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-zinc-300 leading-relaxed mb-3">
+                    Chat directly with CS <span className="text-sky-300 font-semibold">{storeSettings?.telegram_cs || "@zonabloxmy"}</span> for assisted order &amp; instant payment guide.
+                  </p>
+                </div>
+
+                <div className="px-3 py-1.5 rounded-xl bg-sky-950/50 border border-sky-500/30 flex items-center gap-2 text-sky-300 text-xs mt-2">
+                  <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+                  <span className="font-semibold">Online &amp; Servicing Orders</span>
+                </div>
+              </div>
+
+              {/* Option 3: Via WhatsApp */}
               <div
                 onClick={() => setSelectedChannel("whatsapp")}
                 className={`p-5 rounded-2xl border cursor-pointer transition-all relative flex flex-col justify-between ${
@@ -706,18 +802,22 @@ export default function TopUpSection() {
                     </div>
                   </div>
 
-                  {storeSettings?.whatsapp_service_active ? (
-                    <div className="px-3 py-2 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-center gap-2 text-emerald-300 text-xs">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="font-semibold">Online &amp; Servicing Orders</span>
-                    </div>
-                  ) : (
-                    <div className="px-3 py-2 rounded-xl bg-amber-950/50 border border-amber-500/30 flex items-center gap-2 text-amber-300 text-xs">
-                      <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
-                      <span className="font-semibold">Currently not servicing WhatsApp</span>
-                    </div>
-                  )}
+                  <p className="text-xs text-zinc-300 leading-relaxed mb-3">
+                    Official WhatsApp order desk. Connect with our Malaysia support representative.
+                  </p>
                 </div>
+
+                {storeSettings?.whatsapp_service_active ? (
+                  <div className="px-3 py-1.5 rounded-xl bg-emerald-950/50 border border-emerald-500/30 flex items-center gap-2 text-emerald-300 text-xs mt-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-semibold">Online &amp; Servicing Orders</span>
+                  </div>
+                ) : (
+                  <div className="px-3 py-1.5 rounded-xl bg-amber-950/50 border border-amber-500/30 flex items-center gap-2 text-amber-300 text-xs mt-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+                    <span className="font-semibold">Currently not servicing WhatsApp</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -788,7 +888,11 @@ export default function TopUpSection() {
                 <div className="flex items-center justify-between text-xs text-zinc-400 mb-1">
                   <span>Method Selected:</span>
                   <strong className="text-white">
-                    {selectedChannel === "website" ? "Via Website" : "Via WhatsApp"}
+                    {selectedChannel === "website"
+                      ? "Via Website"
+                      : selectedChannel === "telegram"
+                      ? "Via Telegram"
+                      : "Via WhatsApp"}
                   </strong>
                 </div>
                 <div className="flex items-center justify-between text-xs text-zinc-400 mb-1">
@@ -1194,30 +1298,44 @@ export default function TopUpSection() {
 
             {/* Info notice */}
             <p className="text-[11px] text-zinc-400 mb-5 leading-relaxed">
-              We opened WhatsApp in a new tab with your order confirmation. If the chat window didn&apos;t open, tap the button below to send your receipt to our CS admin.
+              {storeSettings?.whatsapp_service_active
+                ? "We opened WhatsApp in a new tab with your order confirmation. If the chat window didn't open, tap the button below to send your receipt to our CS admin."
+                : "Payment receipt recorded! Tap the button below to confirm your order with our active Telegram CS desk."}
             </p>
 
             {/* Action Buttons */}
             <div className="flex flex-col gap-2.5">
-              <a
-                href={`https://wa.me/${storeSettings?.whatsapp_cs ? storeSettings.whatsapp_cs.replace(/\D/g, "") : "60123456789"}?text=${encodeURIComponent(
-                  `*PAYMENT CONFIRMATION VIA WEBSITE - ZONABLOX MALAYSIA*\n\n` +
-                    `Hello Admin ZonaBlox, I have completed the transfer and attached my payment receipt on the website:\n\n` +
-                    `• *Order Code*: ${completedOrder.orderCode}\n` +
-                    `• *Roblox Username*: ${completedOrder.username}\n` +
-                    `• *Robux Package*: ${completedOrder.robux.toLocaleString()} Robux\n` +
-                    `• *Total Amount*: RM ${completedOrder.price}\n` +
-                    `• *Payment Method*: Website Checkout (DuitNow QR / FPX)\n` +
-                    `• *Buyer WhatsApp*: ${completedOrder.whatsapp}\n\n` +
-                    `Please process the Robux top-up to my Roblox account. Thank you!`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>Open WhatsApp Chat</span>
-              </a>
+              {storeSettings?.whatsapp_service_active ? (
+                <a
+                  href={`https://wa.me/${storeSettings?.whatsapp_cs ? storeSettings.whatsapp_cs.replace(/\D/g, "") : "60123456789"}?text=${encodeURIComponent(
+                    `*PAYMENT CONFIRMATION VIA WEBSITE - ZONABLOX MALAYSIA*\n\n` +
+                      `Hello Admin ZonaBlox, I have completed the transfer and attached my payment receipt on the website:\n\n` +
+                      `• *Order Code*: ${completedOrder.orderCode}\n` +
+                      `• *Roblox Username*: ${completedOrder.username}\n` +
+                      `• *Robux Package*: ${completedOrder.robux.toLocaleString()} Robux\n` +
+                      `• *Total Amount*: RM ${completedOrder.price}\n` +
+                      `• *Payment Method*: Website Checkout (DuitNow QR / FPX)\n` +
+                      `• *Buyer WhatsApp*: ${completedOrder.whatsapp}\n\n` +
+                      `Please process the Robux top-up to my Roblox account. Thank you!`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(16,185,129,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Open WhatsApp Chat</span>
+                </a>
+              ) : (
+                <a
+                  href={getTelegramOrderUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 via-blue-600 to-indigo-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-[0_0_20px_rgba(14,165,233,0.35)] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Confirm with Telegram CS ({storeSettings?.telegram_cs || "@zonabloxmy"})</span>
+                </a>
+              )}
 
               <button
                 type="button"
@@ -1232,6 +1350,90 @@ export default function TopUpSection() {
                 className="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold text-xs transition-all cursor-pointer"
               >
                 Done / Place Another Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* POPUP 4: MODAL SUKSES METODE VIA TELEGRAM */}
+      {/* POPUP 4: MODAL SUKSES METODE VIA TELEGRAM (IDENTIK DENGAN POPUP WHATSAPP) */}
+      {telegramSuccessModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+          <div className="bg-[#071318] border border-sky-500/40 rounded-2xl sm:rounded-3xl max-w-md w-full p-4 sm:p-8 shadow-2xl relative text-center my-auto max-h-[92vh] overflow-y-auto">
+            {/* Close Button */}
+            <button
+              onClick={() => setTelegramSuccessModalOpen(false)}
+              className="absolute top-3.5 right-3.5 sm:top-5 sm:right-5 p-1.5 sm:p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors z-20 cursor-pointer"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Success Icon */}
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-sky-500/20 to-teal-500/20 border border-sky-500/40 text-sky-400 flex items-center justify-center mx-auto mb-4 shadow-[0_0_25px_rgba(14,165,233,0.3)]">
+              <Sparkles className="w-8 h-8 text-sky-400" />
+            </div>
+
+            <h3 className="text-xl sm:text-2xl font-black text-white">
+              Order Registered Successfully!
+            </h3>
+            <p className="text-xs text-sky-400 font-semibold mt-1">
+              Robux Order #{username} is Queued
+            </p>
+
+            {/* Telegram CS Online Status Card */}
+            <div className="my-5 p-3.5 rounded-2xl bg-sky-950/40 border border-sky-500/30 text-left space-y-1.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-sky-400">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-sky-400" />
+                <span>Telegram CS is Online &amp; Ready</span>
+              </div>
+              <p className="text-xs text-zinc-300 leading-relaxed">
+                We have queued your order and opened Telegram chat with our CS. Please send the message in Telegram to finalize your payment and receive your Robux immediately!
+              </p>
+            </div>
+
+            {/* Order Details */}
+            <div className="p-4 rounded-xl bg-[#040a0d] border border-sky-950 text-xs text-left space-y-2 mb-6">
+              <div className="flex justify-between text-zinc-400">
+                <span>Username:</span>
+                <span className="text-white font-bold">@{username}</span>
+              </div>
+              <div className="flex justify-between text-zinc-400">
+                <span>Robux Package:</span>
+                <span className="text-sky-400 font-bold">
+                  {selectedPackage?.amount.toLocaleString()} Robux
+                </span>
+              </div>
+              <div className="flex justify-between text-zinc-400">
+                <span>Total:</span>
+                <span className="text-orange-400 font-bold">
+                  RM {selectedPackage?.priceMYR}
+                </span>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col gap-2.5">
+              <a
+                href={getTelegramOrderUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <Send className="w-4 h-4" />
+                <span>Open Telegram Chat Again</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  setTelegramSuccessModalOpen(false);
+                  setSelectedChannel("website");
+                  setWebsiteModalOpen(true);
+                }}
+                className="w-full py-2.5 rounded-xl bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 text-xs font-semibold transition cursor-pointer"
+              >
+                Or Pay via Website (Automated)
               </button>
             </div>
           </div>

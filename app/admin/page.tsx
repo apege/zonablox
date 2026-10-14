@@ -353,7 +353,7 @@ export default function AdminPage() {
       4200: { myr: 18, idr: 79000 },
       10500: { myr: 46, idr: 210000 },
     };
-    const channels: ("whatsapp" | "website")[] = ["whatsapp", "website"];
+    const channels: ("whatsapp" | "website" | "telegram")[] = ["whatsapp", "website", "telegram"];
     const selectedChan = channels[Math.floor(Math.random() * channels.length)];
 
     const newOrder: AdminOrder = {
@@ -364,7 +364,7 @@ export default function AdminPage() {
       priceMYR: priceMap[randomRobux].myr,
       priceIDR: priceMap[randomRobux].idr,
       channel: selectedChan,
-      submethod: selectedChan === "website" ? "DuitNow QR Instant" : "WhatsApp Direct",
+      submethod: selectedChan === "website" ? "DuitNow QR Instant" : selectedChan === "telegram" ? "Telegram Direct" : "WhatsApp Direct",
       status: "masuk",
       createdAt: "Just now",
       createdAtTimestamp: Date.now(),

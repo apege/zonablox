@@ -1,20 +1,27 @@
 import { NextResponse } from "next/server";
-import { queryOne, invalidateCache } from "@/lib/db";
+import { queryOne, cachedQueryOne, invalidateCache } from "@/lib/db";
 
 // GET /api/store-settings
-// Real-time fresh settings with strict anti-cache headers for Cloudflare Edge & Browser
+// Real-time fresh settings for Admin, edge-cached with in-memory fallback for storefront
 export async function GET(request: Request) {
   try {
-    const settings = await queryOne(
-      `SELECT store_name, whatsapp_cs, whatsapp_service_active, promo_active, promo_package, promo_headline, promo_description, promo_end_date, qris_nmid, qris_image, store_logo
+    const { searchParams } = new URL(request.url);
+    const isAdmin = searchParams.get("admin") === "true";
+
+    const sqlText = `SELECT store_name, whatsapp_cs, whatsapp_service_active, telegram_cs, promo_active, promo_package, promo_headline, promo_description, promo_end_date, qris_nmid, qris_image, store_logo
        FROM public.store_settings
-       WHERE id = 'default' LIMIT 1;`
-    );
+       WHERE id = 'default' LIMIT 1;`;
+
+    // Non-admin storefront requests use 30s in-memory cache to handle extreme traffic spikes with 0 DB overhead
+    const settings = isAdmin
+      ? await queryOne(sqlText)
+      : await cachedQueryOne("store_settings:public", sqlText, [], 30);
 
     const fallback = {
       store_name: "ZonaBlox Malaysia",
       whatsapp_cs: "60123456789",
       whatsapp_service_active: false,
+      telegram_cs: "@zonabloxmy",
       promo_active: true,
       promo_package: "2,700 Robux (RM 12.00)",
       promo_headline: "SPECIAL MALAYSIA ROBUX FLASH SALE",
@@ -25,9 +32,6 @@ export async function GET(request: Request) {
         "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80",
       store_logo: "/logo.jpg",
     };
-
-    const { searchParams } = new URL(request.url);
-    const isAdmin = searchParams.get("admin") === "true";
 
     const headers: Record<string, string> = isAdmin
       ? {
@@ -63,6 +67,7 @@ export async function PUT(request: Request) {
       "store_name",
       "whatsapp_cs",
       "whatsapp_service_active",
+      "telegram_cs",
       "promo_active",
       "promo_package",
       "promo_headline",

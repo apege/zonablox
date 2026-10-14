@@ -6,8 +6,8 @@ export interface AdminOrder {
   robuxAmount: number; // e.g. 2200
   priceMYR: number; // e.g. 10
   priceIDR: number; // e.g. 45000
-  channel: "whatsapp" | "website";
-  submethod: string; // e.g. "DuitNow QR", "TNG eWallet", "WhatsApp Direct"
+  channel: "whatsapp" | "website" | "telegram";
+  submethod: string; // e.g. "DuitNow QR", "TNG eWallet", "WhatsApp Direct", "Telegram Direct"
   status: "masuk" | "diproses" | "selesai" | "dibatalkan";
   createdAt: string; // e.g. "7 Oct 2026, 19:42 MYT"
   createdAtTimestamp: number;

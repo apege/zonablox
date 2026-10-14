@@ -16,6 +16,7 @@ import {
   Calendar,
   CreditCard,
   Percent,
+  Send,
 } from "lucide-react";
 import { AdminOrder } from "@/app/data/adminOrdersData";
 
@@ -25,8 +26,8 @@ export interface PaymentMutationItem {
   orderCode: string; // e.g. ZBX25053496
   amountMYR: number;
   robuxAmount: number;
-  channel: "website" | "whatsapp";
-  methodName: string; // DuitNow QR, TNG eWallet, FPX, WhatsApp
+  channel: "website" | "whatsapp" | "telegram";
+  methodName: string; // DuitNow QR, TNG eWallet, FPX, WhatsApp, Telegram
   dateStr: string;
   timestamp: number;
   status: "PAID";
@@ -65,7 +66,7 @@ export default function PaymentHistoryView({
   }, [orders]);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [channelFilter, setChannelFilter] = useState<"all" | "website" | "whatsapp">("all");
+  const [channelFilter, setChannelFilter] = useState<"all" | "website" | "whatsapp" | "telegram">("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Calculations
@@ -74,14 +75,17 @@ export default function PaymentHistoryView({
   const totalTransaksiLunas = mutations.length;
   const aovMYR = totalTransaksiLunas > 0 ? (totalDanaMasukMYR / totalTransaksiLunas).toFixed(2) : "0.00";
 
-  // Breakdown Website vs WhatsApp
+  // Breakdown Website vs Telegram vs WhatsApp
   const websiteMutations = mutations.filter((m) => m.channel === "website");
+  const telegramMutations = mutations.filter((m) => m.channel === "telegram");
   const whatsappMutations = mutations.filter((m) => m.channel === "whatsapp");
 
   const websiteOmset = websiteMutations.reduce((sum, m) => sum + m.amountMYR, 0);
+  const telegramOmset = telegramMutations.reduce((sum, m) => sum + m.amountMYR, 0);
   const whatsappOmset = whatsappMutations.reduce((sum, m) => sum + m.amountMYR, 0);
 
   const websitePercent = totalDanaMasukMYR > 0 ? ((websiteOmset / totalDanaMasukMYR) * 100).toFixed(1) : "0";
+  const telegramPercent = totalDanaMasukMYR > 0 ? ((telegramOmset / totalDanaMasukMYR) * 100).toFixed(1) : "0";
   const whatsappPercent = totalDanaMasukMYR > 0 ? ((whatsappOmset / totalDanaMasukMYR) * 100).toFixed(1) : "0";
 
   const handleRefresh = () => {
@@ -121,6 +125,7 @@ export default function PaymentHistoryView({
 
   const filtered = mutations.filter((item) => {
     if (channelFilter === "website" && item.channel !== "website") return false;
+    if (channelFilter === "telegram" && item.channel !== "telegram") return false;
     if (channelFilter === "whatsapp" && item.channel !== "whatsapp") return false;
 
     if (searchTerm.trim()) {
@@ -245,11 +250,11 @@ export default function PaymentHistoryView({
             REVENUE BY PAYMENT CHANNEL
           </h2>
           <p className="text-xs text-zinc-400 mt-0.5">
-            Breakdown of sales generated through Website vs WhatsApp Direct
+            Breakdown of sales generated through Website, Telegram CS, &amp; WhatsApp Direct
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Card 1: WEBSITE / DUITNOW */}
           <div className="p-5 sm:p-6 rounded-3xl bg-[#0b1611] border border-emerald-500/25 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
@@ -290,7 +295,47 @@ export default function PaymentHistoryView({
             </div>
           </div>
 
-          {/* Card 2: WHATSAPP DIRECT */}
+          {/* Card 2: TELEGRAM DIRECT */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-[#0b1611] border border-sky-500/25 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
+                  <Send className="w-5 h-5" />
+                </div>
+                <h4 className="text-sm sm:text-base font-extrabold text-white tracking-tight">
+                  TELEGRAM DIRECT
+                </h4>
+              </div>
+
+              <span className="px-3 py-1 rounded-full text-xs font-black bg-sky-500/15 text-sky-400 border border-sky-500/30">
+                {telegramPercent}%
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 pt-1">
+              <div>
+                <span className="text-[11px] text-zinc-400 font-semibold block">Total Revenue</span>
+                <span className="text-lg sm:text-xl font-black text-white">
+                  RM {telegramOmset.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
+              <div>
+                <span className="text-[11px] text-zinc-400 font-semibold block">Transactions</span>
+                <span className="text-lg sm:text-xl font-bold text-zinc-200">
+                  {telegramMutations.length} orders
+                </span>
+              </div>
+            </div>
+
+            <div className="w-full h-2.5 rounded-full bg-[#070e0b] overflow-hidden border border-emerald-950">
+              <div
+                style={{ width: `${telegramPercent}%` }}
+                className="h-full bg-gradient-to-r from-sky-500 to-blue-500 rounded-full"
+              />
+            </div>
+          </div>
+
+          {/* Card 3: WHATSAPP DIRECT */}
           <div className="p-5 sm:p-6 rounded-3xl bg-[#0b1611] border border-emerald-500/25 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -368,6 +413,16 @@ export default function PaymentHistoryView({
               Website ({websiteMutations.length})
             </button>
             <button
+              onClick={() => setChannelFilter("telegram")}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                channelFilter === "telegram"
+                  ? "bg-sky-600 text-white shadow-sm"
+                  : "text-zinc-400 hover:text-white"
+              }`}
+            >
+              Telegram ({telegramMutations.length})
+            </button>
+            <button
               onClick={() => setChannelFilter("whatsapp")}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition ${
                 channelFilter === "whatsapp"
@@ -429,12 +484,14 @@ export default function PaymentHistoryView({
                   <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium">
                     <span
                       className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${
-                        item.channel === "whatsapp"
+                        item.channel === "telegram"
+                          ? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
+                          : item.channel === "whatsapp"
                           ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                          : "bg-orange-500/20 text-orange-300 border border-orange-500/30"
                       }`}
                     >
-                      {item.methodName}
+                      {item.channel}
                     </span>
                     <span>•</span>
                     <span className="text-zinc-400">{item.dateStr}</span>

@@ -249,7 +249,9 @@ export default function OrderDetailView({
               <span className="text-zinc-400 font-medium shrink-0">Payment Method</span>
               <span
                 className={`inline-flex items-center self-start sm:self-auto px-2.5 py-1.5 rounded-xl text-xs font-bold ${
-                  order.channel === "whatsapp"
+                  order.channel === "telegram"
+                    ? "bg-sky-500/20 text-sky-400 border border-sky-500/30"
+                    : order.channel === "whatsapp"
                     ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
                     : "bg-purple-500/20 text-purple-300 border border-purple-500/30"
                 }`}
