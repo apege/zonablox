@@ -30,7 +30,16 @@ export async function GET(request: Request) {
       { success: true, data: testimonials },
       {
         headers: {
-          "Cache-Control": status === "approved" ? "public, s-maxage=30, stale-while-revalidate=60" : "no-cache",
+          "Cache-Control":
+            status === "approved"
+              ? "public, max-age=10, s-maxage=30, stale-while-revalidate=60"
+              : "no-cache",
+          ...(status === "approved"
+            ? {
+                "CDN-Cache-Control": "public, max-age=30",
+                "Cloudflare-CDN-Cache-Control": "public, max-age=30",
+              }
+            : {}),
         },
       }
     );
