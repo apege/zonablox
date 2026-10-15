@@ -20,6 +20,7 @@ import {
   MessageSquare,
   CreditCard,
   Settings,
+  Zap,
 } from "lucide-react";
 
 export type AdminTab =
@@ -32,6 +33,7 @@ export type AdminTab =
   | "pricelist"
   | "customers"
   | "blacklist"
+  | "activations"
   | "testimonials"
   | "finance"
   | "settings";
@@ -358,6 +360,31 @@ export default function AdminSidebar({
                     }`}
                   />
                   <span>Blacklist &amp; Fraud</span>
+                </button>
+
+                {/* ID Roblox Activation */}
+                <button
+                  onClick={() => {
+                    onSelectTab("activations");
+                    onCloseMobile();
+                  }}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all text-left ${
+                    currentTab === "activations"
+                      ? "bg-gradient-to-r from-amber-500/20 via-amber-600/15 to-transparent text-amber-300 border border-amber-500/40 font-bold shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+                      : "text-zinc-300 hover:text-white hover:bg-emerald-950/30 border border-transparent font-medium"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Zap
+                      className={`w-4 h-4 ${
+                        currentTab === "activations" ? "text-amber-400 fill-amber-400" : "text-zinc-400"
+                      }`}
+                    />
+                    <span>Aktivasi ID Roblox</span>
+                  </div>
+                  <span className="text-[10px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    Sistem
+                  </span>
                 </button>
               </div>
             </div>

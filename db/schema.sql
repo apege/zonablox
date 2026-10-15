@@ -140,6 +140,22 @@ CREATE TABLE IF NOT EXISTS public.storage_cleanup_logs (
 );
 
 -- ------------------------------------------------------------------------------
+-- 8. ID ACTIVATIONS (Roblox Account Activation Ledger)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.id_activations (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  roblox_username text NOT NULL UNIQUE,
+  is_active boolean NOT NULL DEFAULT true,
+  fee_amount numeric(12,2) NOT NULL DEFAULT 100000.00,
+  currency text NOT NULL DEFAULT 'IDR',
+  notes text NULL,
+  activated_at timestamptz NOT NULL DEFAULT now(),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+
+-- ------------------------------------------------------------------------------
 -- INDEXES FOR PERFORMANCE
 -- ------------------------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_orders_order_code ON public.orders(order_code);

@@ -12,6 +12,7 @@ import BlacklistView from "./components/BlacklistView";
 import TestimonialsView from "./components/TestimonialsView";
 import PaymentHistoryView from "./components/PaymentHistoryView";
 import StoreSettingsView from "./components/StoreSettingsView";
+import IdActivationView from "./components/IdActivationView";
 import ReceiptModal from "./components/ReceiptModal";
 import SendReviewModal from "./components/SendReviewModal";
 import AdminLoginView from "./components/AdminLoginView";
@@ -36,6 +37,7 @@ export default function AdminPage() {
     whatsapp?: string;
     robloxUserId?: string;
   } | null>(null);
+  const [activationPrefill, setActivationPrefill] = useState<string | null>(null);
 
   // Send Review Modal State
   const [reviewModalOrder, setReviewModalOrder] = useState<AdminOrder | null>(null);
@@ -546,6 +548,11 @@ export default function AdminPage() {
                 setReceiptModal({ isOpen: true, imageUrl: img, orderId: id })
               }
               onOpenReviewModal={(order) => setReviewModalOrder(order)}
+              onNavigateToActivation={(username) => {
+                setActivationPrefill(username);
+                setCurrentTab("activations");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             />
           )}
 
@@ -571,6 +578,16 @@ export default function AdminPage() {
               onToast={showToast}
               externalPrefill={blacklistPrefill}
               onClearPrefill={() => setBlacklistPrefill(null)}
+            />
+          )}
+
+          {currentTab === "activations" && (
+            <IdActivationView
+              orders={orders}
+              prefilledUsername={activationPrefill}
+              currency={currency}
+              onToast={showToast}
+              onClearPrefill={() => setActivationPrefill(null)}
             />
           )}
 

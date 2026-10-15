@@ -18,6 +18,7 @@ import {
   Eye,
   Save,
   Star,
+  Zap,
 } from "lucide-react";
 import { AdminOrder, formatCurrency } from "@/app/data/adminOrdersData";
 
@@ -29,6 +30,7 @@ interface OrderDetailViewProps {
   onSaveAdminNotes: (orderId: string, notes: string) => void;
   onOpenReceipt: (imageUrl: string, orderId: string) => void;
   onOpenReviewModal?: (order: AdminOrder) => void;
+  onNavigateToActivation?: (username: string) => void;
 }
 
 export default function OrderDetailView({
@@ -39,6 +41,7 @@ export default function OrderDetailView({
   onSaveAdminNotes,
   onOpenReceipt,
   onOpenReviewModal,
+  onNavigateToActivation,
 }: OrderDetailViewProps) {
   const [adminNotes, setAdminNotes] = useState(order.adminNotes || "");
   const [isSaved, setIsSaved] = useState(false);
@@ -176,6 +179,18 @@ export default function OrderDetailView({
             <MessageCircle className="w-3.5 h-3.5" />
             <span>Chat Buyer</span>
           </a>
+
+          {/* ID Activation Button */}
+          {onNavigateToActivation && (
+            <button
+              type="button"
+              onClick={() => onNavigateToActivation(order.username)}
+              className="px-3.5 py-2.5 sm:py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.25)] cursor-pointer"
+            >
+              <Zap className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+              <span>Aktivasi ID</span>
+            </button>
+          )}
 
           {/* Send Review Button for Completed Orders */}
           {order.status === "selesai" && (
