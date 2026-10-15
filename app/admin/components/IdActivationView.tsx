@@ -6,17 +6,10 @@ import {
   Sparkles,
   Lock,
   Check,
-  CheckCircle2,
   Zap,
   X,
   Search,
-  RotateCcw,
-  Clock,
-  ShieldAlert,
-  ArrowRight,
-  ExternalLink,
   Edit2,
-  Trash2,
 } from "lucide-react";
 import { AdminOrder } from "@/app/data/adminOrdersData";
 
@@ -30,17 +23,6 @@ interface IdActivationViewProps {
     type?: "success" | "info" | "warning"
   ) => void;
   onClearPrefill?: () => void;
-}
-
-interface ActivationRecord {
-  id: string;
-  roblox_username: string;
-  is_active: boolean;
-  fee_amount: number;
-  currency: string;
-  notes: string | null;
-  activated_at: string | null;
-  created_at?: string;
 }
 
 export default function IdActivationView({
@@ -68,10 +50,6 @@ export default function IdActivationView({
 
   // Success Toast Banner at top of card (as in screenshot 3)
   const [topToastMessage, setTopToastMessage] = useState<string | null>(null);
-
-  // All activations history ledger
-  const [activationsList, setActivationsList] = useState<ActivationRecord[]>([]);
-  const [historySearch, setHistorySearch] = useState<string>("");
 
   // Quick edit fee modal/state
   const [isEditingFee, setIsEditingFee] = useState<boolean>(false);
@@ -102,19 +80,6 @@ export default function IdActivationView({
     }
   };
 
-  // Load all activations ledger
-  const loadActivationsList = async () => {
-    try {
-      const res = await fetch("/api/activations");
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        setActivationsList(json.data);
-      }
-    } catch {
-      // ignore
-    }
-  };
-
   // Initial load
   useEffect(() => {
     const targetUser = prefilledUsername ? prefilledUsername.replace(/^@/, "") : usernameInput;
@@ -122,7 +87,6 @@ export default function IdActivationView({
       setUsernameInput(targetUser);
       checkUsernameStatus(targetUser);
     }
-    loadActivationsList();
     if (onClearPrefill) onClearPrefill();
   }, [prefilledUsername]);
 
@@ -158,7 +122,6 @@ export default function IdActivationView({
         setIsActive(true);
         setTopToastMessage(`ID @${clean} BERHASIL DIAKTIFKAN!`);
         onToast("ID Diaktifkan", `ID @${clean} telah berhasil diaktifkan.`, "success");
-        loadActivationsList();
       } else {
         onToast("Gagal Mengaktifkan", json.error || "Terjadi kesalahan.", "warning");
       }
@@ -196,7 +159,6 @@ export default function IdActivationView({
         setIsActive(false);
         setTopToastMessage(null);
         onToast("ID Dinonaktifkan", `Status ID @${clean} berhasil dinonaktifkan.`, "info");
-        loadActivationsList();
       }
     } catch {
       onToast("Error", "Gagal menonaktifkan ID.", "warning");
@@ -223,54 +185,11 @@ export default function IdActivationView({
     return `RM ${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
-  // Filtered ledger list
-  const filteredList = activationsList.filter((item) =>
-    item.roblox_username.toLowerCase().includes(historySearch.toLowerCase())
-  );
-
   const cleanUser = usernameInput.trim().replace(/^@/, "");
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300 max-w-5xl mx-auto">
-      {/* 1. Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-emerald-950/80">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/10 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
-              <Zap className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight uppercase">
-                Aktivasi <span className="text-amber-400">ID Roblox</span>
-              </h1>
-              <p className="text-xs text-zinc-400 mt-0.5">
-                Kelola status aktivasi akun Roblox pelanggan untuk otorisasi pengiriman Robux
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Currency & Quick Actions */}
-        <div className="flex items-center gap-3">
-          <div className="px-3 py-1.5 rounded-xl bg-[#09140f] border border-emerald-500/30 text-xs font-semibold text-zinc-300 flex items-center gap-2">
-            <span className="text-zinc-500">Mata Uang Biaya:</span>
-            <button
-              onClick={() => {
-                const nextCurr = feeCurrency === "IDR" ? "MYR" : "IDR";
-                const nextAmt = nextCurr === "MYR" ? 30 : 100000;
-                setFeeCurrency(nextCurr);
-                setFeeAmount(nextAmt);
-                setTempFee(String(nextAmt));
-              }}
-              className="px-2 py-0.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold transition text-xs"
-            >
-              {feeCurrency} (Klik Ganti)
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. Top Toast Notification (as seen in Image 3) */}
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300 max-w-4xl mx-auto py-2">
+      {/* 1. Top Toast Notification (as seen in Image 3) */}
       {topToastMessage && (
         <div className="animate-in slide-in-from-top-4 fade-in duration-300 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 px-5 py-3.5 flex items-center justify-between shadow-[0_0_25px_rgba(16,185,129,0.15)] text-emerald-300 font-bold text-sm tracking-wide">
           <div className="flex items-center gap-3">
@@ -289,7 +208,7 @@ export default function IdActivationView({
         </div>
       )}
 
-      {/* 3. Main Activation Card (Matching Client Screenshot Layout & ZonaBlox Theme) */}
+      {/* 2. Main Activation Card (Matching Client Screenshot Layout & ZonaBlox Theme) */}
       <div
         className={`rounded-3xl p-6 sm:p-10 border transition-all duration-300 relative overflow-hidden shadow-2xl ${
           isActive
@@ -356,7 +275,7 @@ export default function IdActivationView({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="absolute inset-y-1.5 right-1.5 px-3 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold transition flex items-center gap-1"
+                className="absolute inset-y-1.5 right-1.5 px-3 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold transition flex items-center gap-1 cursor-pointer"
                 title="Cek status username"
               >
                 <Search className="w-3.5 h-3.5" />
@@ -440,7 +359,7 @@ export default function IdActivationView({
                 />
                 <button
                   onClick={handleSaveFee}
-                  className="px-2 py-1 bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold rounded"
+                  className="px-2 py-1 bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold rounded cursor-pointer"
                 >
                   Simpan
                 </button>
@@ -452,7 +371,7 @@ export default function IdActivationView({
                 </span>
                 <button
                   onClick={() => setIsEditingFee(true)}
-                  className="opacity-0 group-hover:opacity-100 transition text-zinc-400 hover:text-white p-1"
+                  className="opacity-0 group-hover:opacity-100 transition text-zinc-400 hover:text-white p-1 cursor-pointer"
                   title="Ubah nominal biaya"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -500,7 +419,7 @@ export default function IdActivationView({
         </div>
       </div>
 
-      {/* 4. Confirmation Popup Modal (Image 2) */}
+      {/* 3. Confirmation Popup Modal (Image 2) */}
       {confirmModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div className="bg-[#0b1711] border border-amber-500/40 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-[0_0_50px_rgba(245,158,11,0.25)] text-center space-y-5 animate-in zoom-in-95 duration-200">
@@ -528,14 +447,14 @@ export default function IdActivationView({
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button
                 onClick={() => setConfirmModalOpen(false)}
-                className="py-3 px-4 rounded-xl border border-zinc-700 bg-white/5 hover:bg-white/10 text-zinc-300 font-bold text-sm transition"
+                className="py-3 px-4 rounded-xl border border-zinc-700 bg-white/5 hover:bg-white/10 text-zinc-300 font-bold text-sm transition cursor-pointer"
               >
                 Kembali
               </button>
               <button
                 onClick={handleConfirmActivate}
                 disabled={isSaving}
-                className="py-3 px-4 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-black font-black text-sm transition shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:brightness-110"
+                className="py-3 px-4 rounded-xl bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-black font-black text-sm transition shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:brightness-110 cursor-pointer"
               >
                 {isSaving ? "Memproses..." : "Ya, Aktifkan"}
               </button>
@@ -543,114 +462,6 @@ export default function IdActivationView({
           </div>
         </div>
       )}
-
-      {/* 5. Daftar Akun Teraktivasi (Ledger History Table) */}
-      <div className="rounded-3xl bg-[#09140f] border border-emerald-500/30 p-5 sm:p-7 shadow-lg space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-              <span>Daftar Akun Roblox Teraktivasi</span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-                {activationsList.filter((a) => a.is_active).length} Aktif
-              </span>
-            </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">
-              Klik username untuk memuat dan mengelola status akun di formulir atas
-            </p>
-          </div>
-
-          <div className="relative w-full sm:w-64">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-            <input
-              type="text"
-              value={historySearch}
-              onChange={(e) => setHistorySearch(e.target.value)}
-              placeholder="Cari username..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-[#060c09] border border-emerald-500/20 text-xs text-white focus:outline-none focus:border-emerald-400"
-            />
-          </div>
-        </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto rounded-2xl border border-emerald-950/80">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#060e0a] text-zinc-400 uppercase font-mono tracking-wider border-b border-emerald-950/80">
-              <tr>
-                <th className="py-3 px-4">Roblox Username</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Biaya</th>
-                <th className="py-3 px-4">Waktu Aktivasi</th>
-                <th className="py-3 px-4 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-emerald-950/40 text-zinc-300">
-              {filteredList.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-zinc-500 italic">
-                    Belum ada akun yang diaktivasi atau tidak ditemukan.
-                  </td>
-                </tr>
-              ) : (
-                filteredList.map((item) => (
-                  <tr
-                    key={item.id}
-                    className="hover:bg-emerald-950/20 transition cursor-pointer"
-                    onClick={() => {
-                      setUsernameInput(item.roblox_username);
-                      checkUsernameStatus(item.roblox_username);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                  >
-                    <td className="py-3 px-4 font-mono font-bold text-white flex items-center gap-1.5">
-                      <span className="text-zinc-500">@</span>
-                      <span>{item.roblox_username}</span>
-                    </td>
-                    <td className="py-3 px-4">
-                      {item.is_active ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold">
-                          <Check className="w-3 h-3 stroke-[3]" />
-                          <span>Aktif</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700 text-[11px] font-bold">
-                          <span>Nonaktif</span>
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-amber-400 font-bold">
-                      {formatFeeDisplay(item.fee_amount, item.currency)}
-                    </td>
-                    <td className="py-3 px-4 text-zinc-400">
-                      {item.activated_at
-                        ? new Date(item.activated_at).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : "-"}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setUsernameInput(item.roblox_username);
-                          checkUsernameStatus(item.roblox_username);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                        className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-[11px] transition"
-                      >
-                        Kelola
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 }
